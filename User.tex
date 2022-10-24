@@ -1,0 +1,43 @@
+\documentclass{mynote}
+
+\begin{document}
+
+\section{检查用户是否存在}
+
+\begin{BashCode}
+# 检查 www 用户是否存在
+id www
+\end{BashCode}
+
+\section{创建一个群组}
+
+\begin{BashCode}
+groupadd www
+\end{BashCode}
+
+\section{创建用户}
+
+\begin{BashCode}
+# 创建 www 用户，
+# 加入到 www 组，
+# 并且不让这个用户登录（不是对应真实的用户）
+useradd -g www -s /sbin/nologin www
+\end{BashCode}
+
+现在我们还没有给这个用户设置密码。没有密码的用户是无法登录的。
+
+我们可以打开 \BashCodeInline{/etc/shadow} 文件查看，该用户对应的密码是 \BashCodeInline{!!} 代表这个用户目前还没有密码。
+
+
+我们也不准备给 \texttt{www} 用户设置密码。它本来就不用登录，只用作虚拟的账户。
+
+
+\section{相关文件}
+
+\begin{BashCode}
+/etc/passwd # 存放用户账户信息
+/etc/shadow # 存放用户密码等信息
+/home       # 用户的家目录所在
+\end{BashCode}
+
+\end{document}

@@ -1,8 +1,109 @@
-\documentclass[a4paper,12pt]{article}
-\usepackage{ctex}
+\documentclass{mynote}
+
 
 \begin{document}
 
+\section{如何显示中文}
+
 ctex - 中文
+
+\section{如何插入代码}
+
+\subsection{使用 listings 宏包}
+
+不推荐，因为需要自己设置语法高亮。
+
+\subsection{使用 minted 宏包}
+
+首先，要安装 Python。我本地安装的是 Python 3.8.4 + Windows 10 系统。
+
+然后，要安装 Python 扩展 Pygments:
+
+\begin{BashCode}
+pip install pygments
+\end{BashCode}
+
+这一步很简单，很顺利。
+
+然后，TeXLive 已经自带了 minted 宏包。
+
+然后，编译的时候，要加入参数：--shell-escape 。命令行下使用：
+
+\begin{BashCode}
+latex -shell-escape test.tex
+\end{BashCode}
+
+但是在 TeXworks 等编辑器中，则是使用两横的参数形式：
+
+编辑 -> 首选项 -> 排版 -> 处理工具 -> 编辑，在最开始添加参数：\BashCodeInline{--shell-escape}
+
+安装配置部分到此结束。
+
+使用的时候，要引入 minted 包:
+
+\begin{LatexCode}
+\usepackage{minted}
+\end{LatexCode}
+
+插入代码段示例：
+
+\LatexFile{snip/minted-example-1.tex}
+%\inputminted{latex}{}
+
+最终生成的效果如下：
+
+\begin{CCode}
+int main() {
+    printf("hello world");
+    return 0;
+}
+\end{CCode}
+
+\subsection{Minted 配色}
+
+\begin{BashCode}
+default
+emacs
+friendly
+colorful
+autumn
+murphy
+manni
+material
+monokai
+perldoc
+pastie
+borland
+trac
+native
+fruity
+bw
+vim
+vs
+tango
+rrt
+xcode
+igor
+paraiso-light
+paraiso-dark
+lovelace
+algol
+algol_nu
+arduino
+rainbow_dash
+abap
+solarized-dark
+solarized-light
+sas
+stata
+stata-light
+stata-dark
+inkpot
+zenburn
+gruvbox-dark
+gruvbox-light
+\end{BashCode}
+
+
 
 \end{document}
