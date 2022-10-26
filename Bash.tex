@@ -1,0 +1,78 @@
+\documentclass{mynote}
+
+\begin{document}
+
+\section{set}
+\begin{BashCode}
+type set
+# set is a shell builtin
+\end{BashCode}
+
+\texttt{set} 用于设置 Bash 的选项（shell options）和位置参数（positional parameters）。
+
+\subsection{设置位置参数}
+
+\begin{BashCode}
+set -- # 清空参数
+echo $# # 结果为 0 因为没有参数
+
+set -- aaa
+echo $# # 结果为 1
+
+set -- aaa bbb
+echo $# # 结果为 2
+
+set -- aaa bbb ccc
+echo "$@"
+# 输出：aaa bbb ccc
+for i; do
+	echo "$i"
+done
+# 输出三行：
+# aaa
+# bbb
+# ccc
+\end{BashCode}
+
+% ----------------------------------
+\section{for}
+
+\begin{BashCode}
+type for
+# for is a shell keyword
+\end{BashCode}
+
+\texttt{for} 是一个 Bash 的关键词。我们可以使用 
+
+\begin{BashCode}
+help for
+man bash
+\end{BashCode}
+
+\noindent 来查看 \texttt{for} 的用法。
+
+\texttt{for} 可以省略 \texttt{in words} 部分，变成：
+
+\begin{BashCode}
+for i do echo "$i"; done
+
+for i; do echo "$i"; done
+\end{BashCode}
+
+这种形式等价于：
+
+\begin{BashCode}
+# if `in WORDS ...;' is not present, then `in "$@"' is assumed.
+for i in "$@"; do echo "$i"; done
+\end{BashCode}
+
+\texttt{do} 之前的分号是可选的，以上两种形式都是对的。但是 \texttt{done} 之前的分号是必须的。或者 \texttt{done} 单独写一行：
+
+\begin{BashCode}
+for i do echo "$i"
+done
+\end{BashCode}
+
+\texttt{help} 和 \texttt{man} 给出的语法（细节）都是不对的，是简化版的。以 \texttt{gnu.org} 官网文档为准。
+
+\end{document}

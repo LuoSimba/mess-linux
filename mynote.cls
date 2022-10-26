@@ -54,6 +54,7 @@
 \newmintedfile[LatexFile]{latex}{}
 \newminted[LatexCode]{latex}{}
 \newminted[CCode]{c}{}
+\newmint[BashCodeA]{bash}{}
 \newminted[BashCode]{bash}{}
 \newmintinline[BashCodeInline]{bash}{}
 \newmint[HtmlCodeA]{html}{}
