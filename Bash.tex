@@ -75,4 +75,111 @@ done
 
 \texttt{help} 和 \texttt{man} 给出的语法（细节）都是不对的，是简化版的。以 \texttt{gnu.org} 官网文档为准。
 
+
+% -----------------------
+\section{关于 \$@}
+
+从表面上看，\BashCodeInline{"$@"} 是一个由双引号包裹的字符串。\BashCodeInline{$@} 是字符串内部放置的一个变量。但实际上它不是\textbf{一个}字符串。
+
+为了便于观察，我们需要先定义一个函数：
+
+\begin{BashCode}
+foo () {
+	echo "size: $#"      # 先输出参数个数
+	for i; do
+		echo "-$i-"     # 再输出每一个参数
+	done
+}
+\end{BashCode}
+
+我们先来看一下空参数的情况：
+
+\begin{BashCode}
+set -- # 清空参数
+
+# 我们会觉得 "$@" 是空字符串，试一下：
+test "$@" = ""  # 报错：unary operator expected
+test = ""       # 报错：（与上一个命令同样的错误）
+# 从这里我们可以看出，它与空字符串在语法上是不等价的
+# 它不是空字符串，更像是消失了。
+
+# 我们再用函数观察：
+foo ""
+# 输出如下：
+# size: 1
+# --
+
+# 以上，说明空字符串也算作一个参数
+
+foo "$@"
+# 输出如下：
+# size: 0
+
+# 以上，说明它不会传入任何参数（消失了）。
+\end{BashCode}
+
+我们再看一下只有一个参数的情况：
+
+\begin{BashCode}
+set -- aaa # 设置一个参数
+
+test "$@" = "aaa" # 结果是真
+
+foo "aaa"
+foo "$@"
+# 两个命令输出完全一样：
+# size: 1
+# -aaa-
+\end{BashCode}
+
+然后再看看两个参数的情况：
+
+\begin{BashCode}
+set -- aaa bbb
+
+echo "$@"
+# 输出结果看起来是 "aaa bbb"
+
+# 我们把输出结果存入文件试试：
+echo "$@"      > a.txt
+echo "aaa bbb" > b.txt
+diff a.txt b.txt
+# 比较的结果是：两个文件内容一模一样
+
+# 那么是不是说明它就是字符串 "aaa bbb" 呢？
+test        "$@" = "aaa bbb"  # 报错：too many arguments
+test "aaa" "bbb" = "aaa bbb"  # 报错：too many arguments
+# 它们不但不相等，而且还引起了语法错误
+# 我们猜测它不是 "aaa bbb" 而是分裂成了两个字符串 "aaa" "bbb"
+
+echo "aaa" "bbb" > a.txt
+echo "aaa bbb"   > b.txt
+diff a.txt b.txt
+# 这样比较的结果也是：两个文件内容一模一样
+
+# 我们再用函数观察一下：
+foo "aaa bbb"
+# 输出：
+# size: 1
+# -aaa bbb-
+foo "aaa" "bbb"
+# 输出：
+# size: 2
+# -aaa-
+# -bbb-
+foo "$@"
+# 输出：
+# size: 2
+# -aaa-
+# -bbb-
+
+# 所以 "$@" 其实等价于 "aaa" "bbb" 两个参数的效果
+\end{BashCode}
+
+从视觉上观察，它是一个字符串。但实际运行的结果表明，它不是一个字符串，而是不定个数的字符串。
+
+我们这里只尝试了 \BashCodeInline{"$@"} 本身的情况，如果字符串里含有其他成分，比如像 \BashCodeInline{"hello $@"} 这样，结果又会有些不同。
+
+
+
 \end{document}
