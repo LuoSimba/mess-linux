@@ -59,6 +59,7 @@
 \newmintinline[BashCodeInline]{bash}{}
 \newmint[HtmlCodeA]{html}{}
 \newmint[PythonCodeA]{python}{}
+\newminted[PythonCode]{python}{}
 \newmintedfile[PythonFile]{python}{}
 \newmintinline[PythonCodeInline]{python}{}
 

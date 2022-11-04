@@ -180,6 +180,79 @@ foo "$@"
 
 我们这里只尝试了 \BashCodeInline{"$@"} 本身的情况，如果字符串里含有其他成分，比如像 \BashCodeInline{"hello $@"} 这样，结果又会有些不同。
 
+\section{不要在循环中用命令}
+
+以下代码是在当前文件夹创建大量的文件，不过它的运行速度特别慢：
+
+\begin{BashCode}
+# 耗时 7 分 52 秒
+time for i in {1..250000}; do
+	touch "$i.txt"
+done
+\end{BashCode}
+
+一开始我以为是 Bash 的循环速度很慢，所以我先测试一下空循环的速度：
+
+\begin{BashCode}
+# 耗时 0.5 秒
+time for i in {1..250000}; do
+	:
+done
+\end{BashCode}
+
+发现执行单纯的循环，Bash 的速度还可以。然后想是不是 \texttt{touch} 命令的效率问题，所以用 \texttt{rm} 命令再试试效果：
+
+\begin{BashCode}
+# 耗时 8 分 06 秒
+time for i in {1..250000}; do
+	rm "$i.txt"
+done
+\end{BashCode}
+
+\texttt{rm} 也很慢，\texttt{touch}也很慢，所以不会是 \texttt{touch} 一个命令的问题。到这里，怀疑的是所有的文件操作（创建、删除）命令都会很慢。
+
+然后用 Python 来试试创建文件：
+
+\begin{PythonCode}
+import os
+
+# 耗时 3.6 秒
+for i in range(250000):
+	os.mknod(str(i) + ".txt")
+\end{PythonCode}
+
+Python 非常快，只需要 3.6 秒就创建了 25 万个空文件。
+
+所以，问题也不是文件操作引起的。
+
+至此，怀疑是在循环中频繁的创建进程、销毁进程，才导致的速度缓慢。因为一个 \texttt{touch} 命令、或者一个 \texttt{rm} 命令，Bash 都要创建一个子进程来执行。这样一来，最终要创建 25 万个进程。这么多的进程最终导致任务缓慢。我们来验证一下。先创建一个空白的可执行文件：
+
+\begin{CCode}
+// 文件: a.c
+// 编译：gcc -o a.out a.c
+/**
+ * 什么也不做
+ */
+int main()
+{
+	return 0;
+}
+\end{CCode}
+
+然后我们在 Bash 循环中执行这个可执行文件：
+
+\begin{BashCode}
+# 耗时 6 分 55 秒
+time for i in {1..250000}; do
+	./a.out
+done
+\end{BashCode}
+
+这个循环执行将近 7 分钟。所以确实是 \textbf{创建进程} 消耗了很多时间。而 \textbf{创建文件、删除文件} 等操作的耗时反而可以忽略不记。
+
+所以，应该避免在一个很大的循环中频繁地调用外部命令。
+
+
 
 
 \end{document}
